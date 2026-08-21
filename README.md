@@ -249,4 +249,4 @@ print(f"ANN F1: {ann_tuned.f1}, Hyperparams: {ann_tuned.hyperparams}")
 
 ---
 
-**آخرین بروزرسانی**: 2024
+**آخرین بروزرسانی**: 2026
