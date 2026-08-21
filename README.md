@@ -1,45 +1,46 @@
 # Network Intrusion Detection using Deep Learning
 
-سامانه‌ای جامع برای شناسایی تهدیدات در شبکه‌های رایانه‌ای با استفاده از الگوریتم‌های یادگیری عمیق و تکنیک‌های هوش مصنوعی.
+A comprehensive system for detecting threats in computer networks using deep learning algorithms and artificial intelligence techniques.
 
-## 📋 توصیف پروژه
+## 📋 Project Description
 
-این پروژه الگوریتم‌های مختلف یادگیری ماشین و یادگیری عمیق را برای تشخیص حملات شبکه‌ای مقایسه می‌کند:
+This project compares different machine learning and deep learning algorithms for detecting network attacks:
 
-- **Autoencoder (تحلیل ناظر نشده)**
+- **Autoencoder (Unsupervised analysis)**
 - **SVM** (Support Vector Machine)
 - **Random Forest**
 - **LSTM Classifier**
 - **Artificial Neural Networks**
 
-### مجموعه‌های داده پشتیبانی شده
+### Supported Datasets
 
-1. **HAI Dataset** - حملات واقعی در سیستم‌های کنترلی صنعتی
-2. **CIC-IDS2018** - مجموعه داده آموزشی برای تشخیص تهدیدات
+1. **HAI Dataset** - Real-world attacks on industrial control systems
+2. **CIC-IDS2018** - Training dataset for threat detection
 
-## 🚀 نصب و راه‌اندازی
+## 🚀 Installation and Setup
 
-### الزامات سیستمی
+### System Requirements
 
 - Python 3.8+
 - pip
 
-### دریافت و نصب
+### Download and install
 
 ```bash
-# کلون کردن مخزن
-git clone https://github.com/yourusername/network-intrusion-detection.git
+# Clone the repositorygit
+ clone https://github.com/yourusername/network-intrusion-detection.git
+
 cd network-intrusion-detection
 
-# ایجاد محیط مجازی (اختیاری اما توصیه شده)
+# Create a virtual environment (optional but recommended)
 python -m venv venv
 source venv/bin/activate  # روی Windows: venv\Scripts\activate
 
-# نصب وابستگی‌ها
+# Install dependencies
 pip install -r requirements.txt
 ```
 
-## 📦 وابستگی‌های اصلی
+## 📦 Main dependencies
 
 ```
 pandas>=1.3.0
@@ -51,24 +52,22 @@ matplotlib>=3.4.0
 seaborn>=0.11.0
 ```
 
-## 📁 ساختار پروژه
+## 📁 Project structure
 
 ```
 network-intrusion-detection/
-├── train_models.py           # توابع آموزش مدل‌ها
-├── ics_add_pipeline.py       # بارگذاری و پیش‌پردازش داده‌ها
+├── train_models.py           #Model training functions
+├── ics_add_pipeline.py       #Data loading and preprocessing
 ├── examples/
-│   ├── hai_example.py        # مثال برای HAI Dataset
-│   ├── cic_ids2018_example.py # مثال برای CIC-IDS2018
-│   └── hyperparameter_tuning.py # تنظیم ابرپارامترها
-├── requirements.txt          # وابستگی‌های پروژه
-├── LICENSE                   # مجوز
-└── README.md                 # این فایل
+│   ├── hai_example.py        # Example for HAI Dataset
+│   ├── cic_ids2018_example.py # Example for CIC-IDS2018
+├── requirements.txt          #Project dependencies
+├── LICENSE                   # License
+└── README.md                 # This file
 ```
+## 💻 How to use
 
-## 💻 نحوه استفاده
-
-### مثال ساده: استفاده از CIC-IDS2018
+### Simple example: Using CIC-IDS2018
 
 ```python
 from ics_add_pipeline import (
@@ -79,7 +78,8 @@ from ics_add_pipeline import (
 from train_models import run_all_models_for_dataset, results_to_dataframe
 from pathlib import Path
 
-# بارگذاری داده‌ها
+# Load data
+
 CIC_DIR = Path("path/to/cic_ids2018")
 selected_files = [
     CIC_DIR / "02-14-2018.csv",  # Brute-Force
@@ -92,7 +92,8 @@ selected_files = [
 cic_df = load_cic_ids2018_multi(selected_files, sample_n_per_file=150_000)
 splits = build_cic_ids2018_split_strategy(cic_df)
 
-# پیش‌پردازش داده‌ها
+# Data preprocessing
+
 ae_train = preprocess_dataset(
     splits["unsupervised"]["train"].drop(columns=["Label"]),
     "attack", ["Protocol"], "CIC AE train"
@@ -111,30 +112,35 @@ sup_test = preprocess_dataset(
     "attack", ["Protocol"], "CIC sup eval"
 )
 
-# آموزش تمام مدل‌ها
+# Training all models
+
 results = run_all_models_for_dataset(
     "CIC-IDS2018",
     ae_train.X, ae_train.y, ae_test.X, ae_test.y,
     sup_train.X, sup_train.y, sup_test.X, sup_test.y,
 )
 
-# نمایش نتایج
+# Show results
+
 print(results_to_dataframe(results))
 ```
 
-### آموزش Autoencoder
+### Autoencoder Tutorial
+
 
 ```python
 from train_models import train_autoencoder
 
-# نسخه سطحی (Shallow)
+# Shallow version
+
 ae_shallow = train_autoencoder(
     ae_train.X, ae_test.X, ae_test.y, 
     "CIC-IDS2018", 
     architecture="shallow"
 )
 
-# نسخه عمیق (Deep)
+# Deep version (Deep)
+
 ae_deep = train_autoencoder(
     ae_train.X, ae_test.X, ae_test.y, 
     "CIC-IDS2018", 
@@ -145,19 +151,22 @@ print(f"Shallow F1: {ae_shallow.f1}")
 print(f"Deep F1: {ae_deep.f1}")
 ```
 
-### تنظیق ابرپارامترها
+### Setting hyperparameters
+
 
 ```python
 from train_models import tune_random_forest, tune_ann
 
-# تنظیق Random Forest
+# Random Forest setup
+
 rf_tuned = tune_random_forest(
     sup_train.X, sup_train.y, sup_test.X, sup_test.y, 
     "CIC-IDS2018",
     n_iter=15, cv=3, max_search_n=50_000,
 )
 
-# تنظیق شبکه عصبی
+# Neural network tuning
+
 ann_tuned = tune_ann(
     sup_train.X, sup_train.y, sup_test.X, sup_test.y, 
     "CIC-IDS2018",
@@ -168,80 +177,79 @@ print(f"RF F1: {rf_tuned.f1}, Hyperparams: {rf_tuned.hyperparams}")
 print(f"ANN F1: {ann_tuned.f1}, Hyperparams: {ann_tuned.hyperparams}")
 ```
 
-## 📊 توابع اصلی
+## 📊 Main functions
+### `train_models.py` module
 
-### ماژول `train_models.py`
+- `train_svm()` - SVM training
+- `train_autoencoder()` - Autoencoder training
+- `train_lstm_classifier()` - LSTM training
+- `tune_random_forest()` - Random Forest tuning
+- `tune_ann()` - Neural network tuning
+- `run_all_models_for_dataset()` - Run all models
+- `run_repeated()` - Repeated run with different seeds
 
-- `train_svm()` - آموزش SVM
-- `train_autoencoder()` - آموزش Autoencoder
-- `train_lstm_classifier()` - آموزش LSTM
-- `tune_random_forest()` - تنظیق Random Forest
-- `tune_ann()` - تنظیق شبکه عصبی
-- `run_all_models_for_dataset()` - اجرای تمام مدل‌ها
-- `run_repeated()` - اجرای تکراری با seed‌های مختلف
+### `ics_add_pipeline.py` module
 
-### ماژول `ics_add_pipeline.py`
+- `load_hai_train_test()` - Load HAI Dataset
+- `load_cic_ids2018_multi()` - Load CIC-IDS2018
+- `build_hai_split_strategy()` - HAI segmentation
+- `build_cic_ids2018_split_strategy()` - CIC-IDS2018 segmentation
+- `preprocess_dataset()` - Preprocessing and Normalization
 
-- `load_hai_train_test()` - بارگذاری HAI Dataset
-- `load_cic_ids2018_multi()` - بارگذاری CIC-IDS2018
-- `build_hai_split_strategy()` - تقسیم‌بندی HAI
-- `build_cic_ids2018_split_strategy()` - تقسیم‌بندی CIC-IDS2018
-- `preprocess_dataset()` - پیش‌پردازش و نرمال‌سازی
-
-## 📈 معیارهای ارزیابی
+## 📈 Evaluation Criteria
 
 - **F1-Score**
 - **Precision**
 - **Recall**
 - **Accuracy**
 - **ROC-AUC**
+## 📝 Available examples
 
-## 📝 مثال‌های موجود
+Working examples in the `examples/` folder:
 
-مثال‌های کاربردی در پوشه `examples/`:
+1. `hai_example.py` - Using HAI Dataset
+2. `cic_ids2018_example.py` - Using CIC-IDS2018
 
-1. `hai_example.py` - استفاده از HAI Dataset
-2. `cic_ids2018_example.py` - استفاده از CIC-IDS2018
-3. `hyperparameter_tuning.py` - تنظیم ابرپارامترها
 
-## 🔍 نکات مهم
+## 🔍 Important points
 
-- **داده‌های بزرگ**: اگر dataset بسیار بزرگ است، از `sample_n_per_file` استفاده کنید
-- **RAM محدود**: مقدار `max_search_n` را در تنظیم ابرپارامترها کاهش دهید
-- **تکرار‌پذیری**: همیشه seed را تنظیم کنید برای نتایج قابل تکرار
+- **Big data**: If the dataset is very large, use `sample_n_per_file`
+- **Limited RAM**: Reduce `max_search_n` value in hyperparameter tuning
+- **Repeatability**: Always set seed for repeatable results
 
-## 🤝 مشارکت
+## 🤝 Contribute
 
-برای مشارکت:
+To contribute:
 
-1. Fork کنید
-2. یک branch جدید ایجاد کنید (`git checkout -b feature/AmazingFeature`)
-3. تغییرات را commit کنید (`git commit -m 'Add some AmazingFeature'`)
-4. Push کنید (`git push origin feature/AmazingFeature`)
-5. Pull Request باز کنید
+1. Fork
+2. Create a new branch (`git checkout -b feature/AmazingFeature`)
+3. Commit changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-## 📄 مجوز
+## 📄 License
 
-این پروژه تحت مجوز MIT منتشر شده است. برای جزئیات به فایل `LICENSE` مراجعه کنید.
+This project is released under the MIT License. See the `LICENSE` file for details.
 
-## 👨‍💻 نویسندگان
+## 👨‍💻 Authors
 
-- **نام شما** - کار اصلی
+- **Your Name** - Fatahi, Mohammad; Barati, Hmazeh.
 
-## 📞 تماس و پشتیبانی
+## 📞 Contact & Support
 
-اگر سوالی دارید:
-- Issues را در GitHub باز کنید
-- با من تماس بگیرید
+If you have any questions:
+- Open Issues on GitHub
+- Contact me
 
-## 🔗 منابع مرتبط
+## 🔗 Related Resources
+
 
 - [CIC-IDS2018 Dataset](https://www.unb.ca/cic/datasets/ids-2018.html)
 - [HAI Dataset](https://github.com/LoJoDR/HAI-1.0)
 - [scikit-learn Documentation](https://scikit-learn.org/)
 - [TensorFlow/Keras](https://www.tensorflow.org/)
 
-## 📚 مراجع تحقیقاتی
+## 📚 Research references
 
 - Deep learning approaches for network intrusion detection
 - Unsupervised learning with Autoencoders
@@ -249,4 +257,4 @@ print(f"ANN F1: {ann_tuned.f1}, Hyperparams: {ann_tuned.hyperparams}")
 
 ---
 
-**آخرین بروزرسانی**: 2026
+**Last update**: 2026
