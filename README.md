@@ -233,7 +233,7 @@ This project is released under the MIT License. See the `LICENSE` file for detai
 
 ## 👨‍💻 Authors
 
-- **Your Name** - Fatahi, Mohammad; Barati, Hmazeh.
+- **Your Name** - Fatahi, Mohammad; Barati, Hamzeh.
 
 ## 📞 Contact & Support
 
